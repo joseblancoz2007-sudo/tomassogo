@@ -1,0 +1,1496 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tomasso GO</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --red: #E8271A;
+    --red-dark: #B01E13;
+    --cream: #FDF6EC;
+    --brown: #2C1A0E;
+    --brown-light: #5C3D26;
+    --orange: #F5820A;
+    --green: #2EAA5E;
+    --yellow: #F5C518;
+    --card: #FFFFFF;
+    --border: #E8DDD0;
+    --text: #2C1A0E;
+    --text-light: #8A6F5A;
+    --shadow: 0 2px 12px rgba(44,26,14,0.10);
+    --shadow-lg: 0 8px 32px rgba(44,26,14,0.15);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  header {
+    background: var(--brown);
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 60px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.3);
+  }
+
+  .logo {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 28px;
+    color: white;
+    letter-spacing: 2px;
+  }
+
+  .logo span { color: var(--red); }
+
+  /* NAV */
+  nav {
+    background: var(--brown-light);
+    display: flex;
+    overflow-x: auto;
+    scrollbar-width: none;
+    border-bottom: 3px solid var(--red);
+  }
+
+  nav::-webkit-scrollbar { display: none; }
+
+  nav button {
+    padding: 12px 20px;
+    background: none;
+    border: none;
+    color: rgba(255,255,255,0.65);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -3px;
+  }
+
+  nav button.active {
+    color: white;
+    border-bottom-color: var(--red);
+    background: rgba(255,255,255,0.08);
+  }
+
+  nav button:hover:not(.active) { color: white; background: rgba(255,255,255,0.05); }
+
+  /* MAIN */
+  main { padding: 20px; max-width: 900px; margin: 0 auto; }
+
+  /* SECTION */
+  .section { display: none; }
+  .section.active { display: block; }
+
+  /* CARDS */
+  .card {
+    background: var(--card);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+    margin-bottom: 16px;
+  }
+
+  .card-title {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 20px;
+    letter-spacing: 1px;
+    color: var(--brown);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* DASHBOARD STATS */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  @media (min-width: 600px) {
+    .stats-grid { grid-template-columns: repeat(4, 1fr); }
+  }
+
+  .stat-card {
+    background: var(--brown);
+    border-radius: 12px;
+    padding: 16px;
+    color: white;
+    text-align: center;
+  }
+
+  .stat-card.green { background: var(--green); }
+  .stat-card.orange { background: var(--orange); }
+  .stat-card.red { background: var(--red); }
+  .stat-card.yellow { background: var(--yellow); color: var(--brown); }
+
+  .stat-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    opacity: 0.85;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+
+  .stat-value {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 26px;
+    letter-spacing: 1px;
+    line-height: 1;
+  }
+
+  .stat-sub {
+    font-size: 11px;
+    opacity: 0.75;
+    margin-top: 3px;
+  }
+
+  /* STOCK TABLE */
+  .stock-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+
+  .stock-table th {
+    text-align: left;
+    padding: 8px 10px;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--text-light);
+    border-bottom: 2px solid var(--border);
+    font-weight: 600;
+  }
+
+  .stock-table td {
+    padding: 10px 10px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+  }
+
+  .stock-table tr:last-child td { border-bottom: none; }
+
+  .badge {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  .badge-ok { background: #D4F5E3; color: #1A7A42; }
+  .badge-low { background: #FFF3D4; color: #9A6200; }
+  .badge-out { background: #FFE0DE; color: #B01E13; }
+
+  /* CATEGORY HEADER */
+  .cat-header {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 15px;
+    letter-spacing: 1px;
+    color: var(--text-light);
+    padding: 12px 10px 4px;
+  }
+
+  /* FORM */
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  @media (max-width: 500px) {
+    .form-row { grid-template-columns: 1fr; }
+  }
+
+  .form-group { display: flex; flex-direction: column; gap: 5px; }
+
+  label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--text-light);
+  }
+
+  input, select, textarea {
+    padding: 10px 12px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: var(--text);
+    background: white;
+    transition: border-color 0.2s;
+    width: 100%;
+  }
+
+  input:focus, select:focus { outline: none; border-color: var(--red); }
+
+  /* PEDIDO ITEMS */
+  .pedido-items { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+
+  .pedido-item {
+    display: grid;
+    grid-template-columns: 1fr 100px 36px;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .qty-input {
+    text-align: center;
+    padding: 10px 6px;
+  }
+
+  .remove-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    background: #FFE0DE;
+    border: none;
+    color: var(--red);
+    cursor: pointer;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+  }
+
+  .remove-btn:hover { background: #fcc; }
+
+  /* BUTTONS */
+  .btn {
+    padding: 12px 20px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.15s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .btn-primary {
+    background: var(--red);
+    color: white;
+  }
+
+  .btn-primary:hover { background: var(--red-dark); transform: translateY(-1px); }
+
+  .btn-secondary {
+    background: var(--border);
+    color: var(--text);
+  }
+
+  .btn-secondary:hover { background: #ddd; }
+
+  .btn-green { background: var(--green); color: white; }
+  .btn-green:hover { background: #259953; transform: translateY(-1px); }
+
+  .btn-full { width: 100%; justify-content: center; }
+
+  /* TOTAL BOX */
+  .total-box {
+    background: var(--cream);
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    margin: 16px 0;
+  }
+
+  .total-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 0;
+    font-size: 14px;
+  }
+
+  .total-row.big {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 22px;
+    letter-spacing: 1px;
+    border-top: 2px solid var(--border);
+    padding-top: 10px;
+    margin-top: 6px;
+  }
+
+  .total-row .green { color: var(--green); }
+
+  /* HISTORIAL */
+  .historial-item {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px;
+    margin-bottom: 10px;
+  }
+
+  .historial-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 8px;
+  }
+
+  .historial-cliente {
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--brown);
+  }
+
+  .historial-fecha {
+    font-size: 11px;
+    color: var(--text-light);
+  }
+
+  .historial-total {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 18px;
+    color: var(--red);
+  }
+
+  .historial-productos {
+    font-size: 12px;
+    color: var(--text-light);
+    line-height: 1.5;
+  }
+
+  /* EMPTY STATE */
+  .empty {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-light);
+  }
+
+  .empty-icon { font-size: 40px; margin-bottom: 10px; }
+  .empty-text { font-size: 14px; }
+
+  /* ADD PRODUCT BTN */
+  .add-product-btn {
+    border: 2px dashed var(--border);
+    background: none;
+    border-radius: 8px;
+    padding: 10px;
+    width: 100%;
+    cursor: pointer;
+    color: var(--text-light);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  .add-product-btn:hover { border-color: var(--red); color: var(--red); background: #fff5f5; }
+
+  /* ALERT */
+  .alert {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: var(--brown);
+    color: white;
+    padding: 14px 24px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    box-shadow: var(--shadow-lg);
+    transition: transform 0.3s;
+    z-index: 999;
+    white-space: nowrap;
+  }
+
+  .alert.show { transform: translateX(-50%) translateY(0); }
+  .alert.success { background: var(--green); }
+  .alert.error { background: var(--red); }
+
+  /* DIVIDER */
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 16px 0;
+  }
+
+  /* SECTION TITLE */
+  .section-title {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 28px;
+    letter-spacing: 2px;
+    color: var(--brown);
+    margin-bottom: 16px;
+  }
+
+  /* STOCK EDIT */
+  .stock-edit {
+    width: 60px;
+    padding: 5px 6px;
+    text-align: center;
+    font-size: 13px;
+  }
+
+  /* TOP PRODUCTS */
+  .top-product {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .top-product:last-child { border-bottom: none; }
+
+  .top-rank {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 24px;
+    color: var(--border);
+    width: 28px;
+    text-align: center;
+  }
+
+  .top-info { flex: 1; }
+  .top-name { font-weight: 600; font-size: 14px; }
+  .top-units { font-size: 12px; color: var(--text-light); }
+  .top-ganancia { font-weight: 600; color: var(--green); font-size: 13px; }
+
+  /* FILTER */
+  .filter-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+
+  .filter-btn {
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1.5px solid var(--border);
+    background: white;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    color: var(--text-light);
+    transition: all 0.15s;
+  }
+
+  .filter-btn.active { background: var(--brown); color: white; border-color: var(--brown); }
+
+  .tipo-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 10px;
+    font-weight: 600;
+    margin-left: 6px;
+  }
+
+  .tipo-cliente { background: #E8F4FF; color: #1A5FA8; }
+  .tipo-fabrica { background: #FFF3D4; color: #9A6200; }
+
+  /* COMPRA ITEM */
+  .compra-item {
+    display: grid;
+    grid-template-columns: 1fr 80px 36px;
+    gap: 8px;
+    align-items: center;
+  }
+</style>
+</head>
+<body>
+
+<div id="loading-overlay" style="display:none;position:fixed;inset:0;background:rgba(44,26,14,0.7);z-index:999;align-items:center;justify-content:center;flex-direction:column;gap:16px">
+  <div style="width:48px;height:48px;border:4px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;animation:spin 0.8s linear infinite"></div>
+  <div style="color:white;font-family:'DM Sans',sans-serif;font-weight:600;font-size:15px">Cargando datos...</div>
+</div>
+<style>@keyframes spin{to{transform:rotate(360deg)}}</style>
+
+<header>
+  <div class="logo">TOMASSO <span>GO</span></div>
+  <div style="font-size:12px;color:rgba(255,255,255,0.5);font-weight:500;">San Isidro</div>
+</header>
+
+<nav>
+  <button class="active" onclick="showSection('dashboard')">📊 Dashboard</button>
+  <button onclick="showSection('nuevo-pedido')">🛒 Pedido Cliente</button>
+  <button onclick="showSection('pedido-fabrica')">🏭 Pedido Fábrica</button>
+  <button onclick="showSection('stock')">📦 Stock</button>
+  <button onclick="showSection('historial')">📋 Historial</button>
+</nav>
+
+<main>
+
+<!-- DASHBOARD -->
+<div id="dashboard" class="section active">
+  <div class="section-title">Panel de Control</div>
+
+  <div class="stats-grid">
+    <div class="stat-card red">
+      <div class="stat-label">Ventas del mes</div>
+      <div class="stat-value" id="dash-ventas">$0</div>
+      <div class="stat-sub" id="dash-pedidos-count">0 pedidos</div>
+    </div>
+    <div class="stat-card green">
+      <div class="stat-label">Ganancia</div>
+      <div class="stat-value" id="dash-ganancia">$0</div>
+      <div class="stat-sub" id="dash-margen">0% margen</div>
+    </div>
+    <div class="stat-card orange">
+      <div class="stat-label">Stock valor</div>
+      <div class="stat-value" id="dash-stock-val">$0</div>
+      <div class="stat-sub" id="dash-stock-pot">pot. $0</div>
+    </div>
+    <div class="stat-card yellow">
+      <div class="stat-label">Alertas stock</div>
+      <div class="stat-value" id="dash-alertas">0</div>
+      <div class="stat-sub">productos bajos</div>
+    </div>
+  </div>
+
+  <!-- TOP PRODUCTOS -->
+  <div class="card">
+    <div class="card-title">🏆 Top Productos</div>
+    <div id="top-productos"></div>
+  </div>
+
+  <!-- HISTORICO TOTAL -->
+  <div class="card">
+    <div class="card-title">📈 Histórico Total</div>
+    <div class="stats-grid" style="margin-bottom:12px">
+      <div class="stat-card" style="background:var(--brown-light)">
+        <div class="stat-label">Ventas totales</div>
+        <div class="stat-value" id="hist-ventas">$0</div>
+        <div class="stat-sub" id="hist-pedidos">0 pedidos</div>
+      </div>
+      <div class="stat-card green">
+        <div class="stat-label">Ganancia total</div>
+        <div class="stat-value" id="hist-ganancia">$0</div>
+        <div class="stat-sub" id="hist-margen">0% margen</div>
+      </div>
+    </div>
+    <div id="hist-por-mes"></div>
+  </div>
+
+  <!-- ALERTAS STOCK -->
+  <div class="card" id="alertas-card" style="display:none">
+    <div class="card-title" style="color:var(--red)">⚠️ Alertas de Stock</div>
+    <div id="alertas-lista"></div>
+  </div>
+</div>
+
+<!-- NUEVO PEDIDO CLIENTE -->
+<div id="nuevo-pedido" class="section">
+  <div class="section-title">Pedido de Cliente</div>
+
+  <div class="card">
+    <div class="form-row">
+      <div class="form-group">
+        <label>Cliente</label>
+        <input type="text" id="cliente-nombre" placeholder="Nombre del cliente">
+      </div>
+      <div class="form-group">
+        <label>Fecha</label>
+        <input type="date" id="cliente-fecha">
+      </div>
+    </div>
+
+    <div class="card-title" style="font-size:16px;margin-bottom:12px">Productos</div>
+    <div class="pedido-items" id="pedido-items"></div>
+    <button class="add-product-btn" onclick="agregarItemPedido()">+ Agregar producto</button>
+
+    <div class="total-box" id="pedido-total-box">
+      <div class="total-row">
+        <span>Subtotal</span>
+        <span id="pedido-subtotal">$0</span>
+      </div>
+      <div class="total-row">
+        <span>Ganancia</span>
+        <span class="green" id="pedido-ganancia">$0</span>
+      </div>
+      <div class="total-row big">
+        <span>TOTAL</span>
+        <span id="pedido-total">$0</span>
+      </div>
+    </div>
+
+    <button class="btn btn-primary btn-full" onclick="confirmarPedido()">✅ Confirmar Pedido</button>
+  </div>
+</div>
+
+<!-- PEDIDO A FÁBRICA -->
+<div id="pedido-fabrica" class="section">
+  <div class="section-title">Pedido a Fábrica</div>
+
+  <div class="card" style="background:#FFF8EE;border-color:#F5C518">
+    <div style="font-size:13px;color:var(--brown-light);font-weight:500">
+      🌐 <strong>Portal Tomasso:</strong> <a href="https://datalivecloud3.com/gen004/sistema/prd/login_new.php" target="_blank" style="color:var(--red)">datalivecloud3.com</a><br>
+      👤 Usuario: <strong>sanisidro@tomassogo</strong> &nbsp;|&nbsp; 🔑 Clave: <strong>4703</strong>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="form-row">
+      <div class="form-group">
+        <label>Fecha del pedido</label>
+        <input type="date" id="fabrica-fecha">
+      </div>
+      <div class="form-group">
+        <label>Nota (opcional)</label>
+        <input type="text" id="fabrica-nota" placeholder="Ej: pedido semanal">
+      </div>
+    </div>
+
+    <div class="card-title" style="font-size:16px;margin-bottom:12px">Productos comprados</div>
+    <div class="pedido-items" id="compra-items"></div>
+    <button class="add-product-btn" onclick="agregarItemCompra()">+ Agregar producto</button>
+
+    <div class="total-box">
+      <div class="total-row big">
+        <span>TOTAL COMPRADO</span>
+        <span id="compra-total">$0</span>
+      </div>
+    </div>
+
+    <button class="btn btn-green btn-full" onclick="confirmarCompra()">📦 Confirmar y actualizar Stock</button>
+  </div>
+</div>
+
+<!-- STOCK -->
+<div id="stock" class="section">
+  <div class="section-title">Stock Actual</div>
+  <div class="card">
+    <div style="font-size:12px;color:var(--text-light);margin-bottom:12px;">Podés editar el stock inicial si recibís mercadería. El stock baja solo cuando confirmás pedidos de clientes.</div>
+    <div id="stock-tabla"></div>
+  </div>
+</div>
+
+<!-- HISTORIAL -->
+<div id="historial" class="section">
+  <div class="section-title">Historial</div>
+
+  <div class="filter-row">
+    <button class="filter-btn active" onclick="filtrarHistorial('todos', this)">Todos</button>
+    <button class="filter-btn" onclick="filtrarHistorial('cliente', this)">Clientes</button>
+    <button class="filter-btn" onclick="filtrarHistorial('fabrica', this)">Fábrica</button>
+  </div>
+
+  <div id="historial-lista"></div>
+</div>
+
+</main>
+
+<div class="alert" id="alert-msg"></div>
+
+<script>
+// ============================================================
+// DATOS INICIALES
+// ============================================================
+const PRODUCTOS = [
+  // PIZZAS
+  { id: 'muzz', nombre: 'Muzzarella', tipo: 'pizza', costo: 6000, precio: 8000 },
+  { id: 'fuga', nombre: 'Fugazzetta', tipo: 'pizza', costo: 6450, precio: 8500 },
+  { id: 'jamon', nombre: 'Jamón', tipo: 'pizza', costo: 6900, precio: 9000 },
+  { id: 'panc', nombre: 'Panceta y verdeo', tipo: 'pizza', costo: 7400, precio: 9500 },
+  { id: 'pepp', nombre: 'Pepperoni', tipo: 'pizza', costo: 8000, precio: 10000 },
+  // EMPANADAS
+  { id: 'carne', nombre: 'Carne', tipo: 'empanada', costo: 10000, precio: 13000 },
+  { id: 'hamq', nombre: 'Jamón y queso', tipo: 'empanada', costo: 10000, precio: 13000 },
+  { id: 'qceb', nombre: 'Queso y cebolla', tipo: 'empanada', costo: 10000, precio: 13000 },
+  { id: 'pollo', nombre: 'Pollo', tipo: 'empanada', costo: 10000, precio: 13000 },
+  { id: 'humi', nombre: 'Humita', tipo: 'empanada', costo: 10000, precio: 13000 },
+  { id: 'verd', nombre: 'Verdura', tipo: 'empanada', costo: 10000, precio: 13000 },
+  { id: 'medi', nombre: 'Mediterránea', tipo: 'empanada', costo: 10000, precio: 13000 },
+  { id: 'roque', nombre: 'Roquefort', tipo: 'empanada', costo: 10000, precio: 13000 },
+  { id: 'bond', nombre: 'Bondiola BBQ', tipo: 'empanada', costo: 10000, precio: 13000 },
+  { id: 'cheese', nombre: 'Cheeseburger', tipo: 'empanada', costo: 10000, precio: 13000 },
+];
+
+const STOCK_INICIAL = {
+  muzz: 6, fuga: 3, jamon: 7, panc: 3, pepp: 3,
+  carne: 7, hamq: 6, qceb: 2, pollo: 6, humi: 3,
+  verd: 3, medi: 2, roque: 2, bond: 5, cheese: 1
+};
+
+// ============================================================
+// STATE (Google Sheets como base de datos en la nube)
+// ============================================================
+const API_URL = 'https://script.google.com/macros/s/AKfycbyuwYq85TDuA6jdST5FxZBvZV65CVCANkcHSNtN2PPDGZH5N4k3DF-QZi1WFGYCUWKs/exec';
+
+let datos = { stock: { ...STOCK_INICIAL }, historial: [] };
+
+
+
+async function guardarDatos(data) {
+  data.precargado_v1 = true;
+  try {
+    await fetch(API_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      body: JSON.stringify(data),
+      headers: { 'Content-Type': 'application/json' }
+    });
+  } catch(e) {
+    showAlert('Error guardando datos', 'error');
+  }
+}
+
+function mostrarCargando(si) {
+  document.getElementById('loading-overlay').style.display = si ? 'flex' : 'none';
+}
+
+// ============================================================
+// HELPERS
+// ============================================================
+function getProducto(id) { return PRODUCTOS.find(p => p.id === id); }
+
+function formatPeso(n) {
+  return '$' + Math.round(n).toLocaleString('es-AR');
+}
+
+function formatFecha(iso) {
+  if (!iso) return '-';
+  const [y, m, d] = iso.split('-');
+  return `${d}/${m}/${y}`;
+}
+
+function stockEstado(qty) {
+  if (qty <= 0) return { label: 'SIN STOCK', cls: 'badge-out' };
+  if (qty <= 2) return { label: 'STOCK BAJO', cls: 'badge-low' };
+  return { label: 'OK', cls: 'badge-ok' };
+}
+
+function showAlert(msg, tipo = '') {
+  const el = document.getElementById('alert-msg');
+  el.textContent = msg;
+  el.className = 'alert show ' + tipo;
+  setTimeout(() => { el.className = 'alert'; }, 2800);
+}
+
+function todayISO() {
+  return new Date().toISOString().split('T')[0];
+}
+
+// ============================================================
+// NAVEGACIÓN
+// ============================================================
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+  renderSection(id);
+}
+
+function renderSection(id) {
+  if (id === 'dashboard') renderDashboard();
+  if (id === 'stock') renderStock();
+  if (id === 'historial') renderHistorial('todos');
+  if (id === 'nuevo-pedido') initPedido();
+  if (id === 'pedido-fabrica') initCompra();
+}
+
+// ============================================================
+// DASHBOARD
+// ============================================================
+function renderDashboard() {
+  // Calcular ventas del mes actual
+  const now = new Date();
+  const mesActual = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+
+  const pedidosCliente = datos.historial.filter(h =>
+    h.tipo === 'cliente' && h.fecha && h.fecha.startsWith(mesActual)
+  );
+
+  let totalVentas = 0, totalGanancia = 0;
+  pedidosCliente.forEach(p => {
+    totalVentas += p.total || 0;
+    totalGanancia += p.ganancia || 0;
+  });
+
+  const margen = totalVentas > 0 ? Math.round((totalGanancia/totalVentas)*100) : 0;
+
+  // Stock value
+  let stockVal = 0, stockPot = 0, alertas = 0;
+  PRODUCTOS.forEach(p => {
+    const qty = datos.stock[p.id] || 0;
+    stockVal += qty * p.costo;
+    stockPot += qty * p.precio;
+    if (qty <= 2) alertas++;
+  });
+
+  document.getElementById('dash-ventas').textContent = formatPeso(totalVentas);
+  document.getElementById('dash-pedidos-count').textContent = pedidosCliente.length + ' pedidos';
+  document.getElementById('dash-ganancia').textContent = formatPeso(totalGanancia);
+  document.getElementById('dash-margen').textContent = margen + '% margen';
+  document.getElementById('dash-stock-val').textContent = formatPeso(stockVal);
+  document.getElementById('dash-stock-pot').textContent = 'pot. ' + formatPeso(stockPot);
+  document.getElementById('dash-alertas').textContent = alertas;
+
+  // HISTÓRICO TOTAL
+  const todosLosPedidos = datos.historial.filter(h => h.tipo === 'cliente');
+  let histVentas = 0, histGanancia = 0;
+  const porMes = {};
+  todosLosPedidos.forEach(p => {
+    histVentas += p.total || 0;
+    histGanancia += p.ganancia || 0;
+    const mes = p.fecha ? p.fecha.substring(0,7) : 'sin-fecha';
+    if (!porMes[mes]) porMes[mes] = { ventas: 0, ganancia: 0, pedidos: 0 };
+    porMes[mes].ventas += p.total || 0;
+    porMes[mes].ganancia += p.ganancia || 0;
+    porMes[mes].pedidos++;
+  });
+  const histMargen = histVentas > 0 ? Math.round((histGanancia/histVentas)*100) : 0;
+  document.getElementById('hist-ventas').textContent = formatPeso(histVentas);
+  document.getElementById('hist-ganancia').textContent = formatPeso(histGanancia);
+  document.getElementById('hist-pedidos').textContent = todosLosPedidos.length + ' pedidos';
+  document.getElementById('hist-margen').textContent = histMargen + '% margen';
+
+  const mesesOrdenados = Object.entries(porMes).sort((a,b) => b[0].localeCompare(a[0]));
+  const nombreMes = { '01':'Enero','02':'Febrero','03':'Marzo','04':'Abril','05':'Mayo','06':'Junio','07':'Julio','08':'Agosto','09':'Septiembre','10':'Octubre','11':'Noviembre','12':'Diciembre' };
+  document.getElementById('hist-por-mes').innerHTML = mesesOrdenados.map(([mes, d]) => {
+    const [anio, m] = mes.split('-');
+    const label = mes === 'sin-fecha' ? 'Sin fecha' : `${nombreMes[m] || m} ${anio}`;
+    const margenMes = d.ventas > 0 ? Math.round((d.ganancia/d.ventas)*100) : 0;
+    return `<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)">
+      <div>
+        <div style="font-weight:600;font-size:14px">${label}</div>
+        <div style="font-size:11px;color:var(--text-light)">${d.pedidos} pedidos · ${margenMes}% margen</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-family:'Bebas Neue',cursive;font-size:18px;color:var(--brown)">${formatPeso(d.ventas)}</div>
+        <div style="font-size:12px;color:var(--green);font-weight:600">gan. ${formatPeso(d.ganancia)}</div>
+      </div>
+    </div>`;
+  }).join('') || '<div style="color:var(--text-light);font-size:13px;padding:10px 0">Aún no hay pedidos registrados</div>';
+
+  // Top productos
+  const ventasPorProd = {};
+  datos.historial.filter(h => h.tipo === 'cliente').forEach(pedido => {
+    pedido.items.forEach(item => {
+      if (!ventasPorProd[item.id]) ventasPorProd[item.id] = { qty: 0, ganancia: 0 };
+      ventasPorProd[item.id].qty += item.cantidad;
+      ventasPorProd[item.id].ganancia += item.ganancia * item.cantidad;
+    });
+  });
+
+  const sorted = Object.entries(ventasPorProd)
+    .sort((a,b) => b[1].qty - a[1].qty)
+    .slice(0, 5);
+
+  const topEl = document.getElementById('top-productos');
+  if (sorted.length === 0) {
+    topEl.innerHTML = '<div class="empty"><div class="empty-icon">📊</div><div class="empty-text">Aún no hay ventas registradas</div></div>';
+  } else {
+    topEl.innerHTML = sorted.map(([id, data], i) => {
+      const prod = getProducto(id);
+      return `<div class="top-product">
+        <div class="top-rank">${i+1}</div>
+        <div class="top-info">
+          <div class="top-name">${prod ? prod.nombre : id}</div>
+          <div class="top-units">${data.qty} unidades vendidas</div>
+        </div>
+        <div class="top-ganancia">${formatPeso(data.ganancia)}</div>
+      </div>`;
+    }).join('');
+  }
+
+  // Alertas stock
+  const alertasCard = document.getElementById('alertas-card');
+  const alertasLista = document.getElementById('alertas-lista');
+  const prodsAlerta = PRODUCTOS.filter(p => (datos.stock[p.id] || 0) <= 2);
+  if (prodsAlerta.length > 0) {
+    alertasCard.style.display = 'block';
+    alertasLista.innerHTML = prodsAlerta.map(p => {
+      const qty = datos.stock[p.id] || 0;
+      const est = stockEstado(qty);
+      return `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border)">
+        <span style="font-weight:500">${p.nombre}</span>
+        <span class="badge ${est.cls}">${qty} — ${est.label}</span>
+      </div>`;
+    }).join('');
+  } else {
+    alertasCard.style.display = 'none';
+  }
+}
+
+// ============================================================
+// STOCK
+// ============================================================
+function renderStock() {
+  const pizzas = PRODUCTOS.filter(p => p.tipo === 'pizza');
+  const empanadas = PRODUCTOS.filter(p => p.tipo === 'empanada');
+
+  let html = `<table class="stock-table">
+    <thead><tr>
+      <th>Producto</th>
+      <th style="text-align:center">Stock</th>
+      <th>Estado</th>
+      <th style="text-align:right">Valor</th>
+    </tr></thead>
+    <tbody>
+    <tr><td colspan="4" class="cat-header">🍕 PIZZAS</td></tr>`;
+
+  pizzas.forEach(p => {
+    const qty = datos.stock[p.id] || 0;
+    const est = stockEstado(qty);
+    html += `<tr>
+      <td>${p.nombre}</td>
+      <td style="text-align:center">
+        <input type="number" class="stock-edit" value="${qty}" min="0"
+          onchange="editarStock('${p.id}', this.value)">
+      </td>
+      <td><span class="badge ${est.cls}">${est.label}</span></td>
+      <td style="text-align:right;font-size:12px;color:var(--text-light)">${formatPeso(qty * p.costo)}</td>
+    </tr>`;
+  });
+
+  html += `<tr><td colspan="4" class="cat-header">🫓 EMPANADAS (pack x8)</td></tr>`;
+
+  empanadas.forEach(p => {
+    const qty = datos.stock[p.id] || 0;
+    const est = stockEstado(qty);
+    html += `<tr>
+      <td>${p.nombre}</td>
+      <td style="text-align:center">
+        <input type="number" class="stock-edit" value="${qty}" min="0"
+          onchange="editarStock('${p.id}', this.value)">
+      </td>
+      <td><span class="badge ${est.cls}">${est.label}</span></td>
+      <td style="text-align:right;font-size:12px;color:var(--text-light)">${formatPeso(qty * p.costo)}</td>
+    </tr>`;
+  });
+
+  html += `</tbody></table>`;
+  document.getElementById('stock-tabla').innerHTML = html;
+}
+
+function editarStock(id, val) {
+  datos.stock[id] = Math.max(0, parseInt(val) || 0);
+  guardarDatos(datos);
+  showAlert('Stock actualizado', 'success');
+}
+
+// ============================================================
+// PEDIDO CLIENTE
+// ============================================================
+let pedidoItems = [];
+
+function initPedido() {
+  document.getElementById('cliente-fecha').value = todayISO();
+  if (pedidoItems.length === 0) agregarItemPedido();
+  else renderPedidoItems();
+}
+
+function agregarItemPedido() {
+  pedidoItems.push({ id: PRODUCTOS[0].id, cantidad: 1 });
+  renderPedidoItems();
+}
+
+function renderPedidoItems() {
+  const container = document.getElementById('pedido-items');
+  container.innerHTML = pedidoItems.map((item, i) => {
+    const selectOptions = PRODUCTOS.map(p =>
+      `<option value="${p.id}" ${p.id === item.id ? 'selected' : ''}>${p.tipo === 'pizza' ? '🍕' : '🫓'} ${p.nombre} — ${formatPeso(p.precio)}</option>`
+    ).join('');
+    return `<div class="pedido-item">
+      <select onchange="cambiarProductoPedido(${i}, this.value)">${selectOptions}</select>
+      <input type="number" class="qty-input" value="${item.cantidad}" min="1"
+        onchange="cambiarCantidadPedido(${i}, this.value)">
+      <button class="remove-btn" onclick="eliminarItemPedido(${i})">✕</button>
+    </div>`;
+  }).join('');
+  actualizarTotalPedido();
+}
+
+function cambiarProductoPedido(i, val) {
+  pedidoItems[i].id = val;
+  actualizarTotalPedido();
+}
+
+function cambiarCantidadPedido(i, val) {
+  pedidoItems[i].cantidad = Math.max(1, parseInt(val) || 1);
+  actualizarTotalPedido();
+}
+
+function eliminarItemPedido(i) {
+  pedidoItems.splice(i, 1);
+  if (pedidoItems.length === 0) pedidoItems.push({ id: PRODUCTOS[0].id, cantidad: 1 });
+  renderPedidoItems();
+}
+
+function actualizarTotalPedido() {
+  let total = 0, ganancia = 0;
+  pedidoItems.forEach(item => {
+    const prod = getProducto(item.id);
+    if (prod) {
+      total += prod.precio * item.cantidad;
+      ganancia += (prod.precio - prod.costo) * item.cantidad;
+    }
+  });
+  document.getElementById('pedido-subtotal').textContent = formatPeso(total);
+  document.getElementById('pedido-total').textContent = formatPeso(total);
+  document.getElementById('pedido-ganancia').textContent = formatPeso(ganancia);
+}
+
+function confirmarPedido() {
+  const cliente = document.getElementById('cliente-nombre').value.trim();
+  const fecha = document.getElementById('cliente-fecha').value;
+
+  if (!cliente) { showAlert('Ingresá el nombre del cliente', 'error'); return; }
+  if (!fecha) { showAlert('Ingresá la fecha', 'error'); return; }
+
+  // Verificar stock
+  const agrupado = {};
+  pedidoItems.forEach(item => {
+    agrupado[item.id] = (agrupado[item.id] || 0) + item.cantidad;
+  });
+
+  for (const [id, qty] of Object.entries(agrupado)) {
+    const actual = datos.stock[id] || 0;
+    if (actual < qty) {
+      const prod = getProducto(id);
+      showAlert(`Sin stock suficiente: ${prod ? prod.nombre : id}`, 'error');
+      return;
+    }
+  }
+
+  let total = 0, ganancia = 0;
+  const items = pedidoItems.map(item => {
+    const prod = getProducto(item.id);
+    const gan = (prod.precio - prod.costo) * item.cantidad;
+    const tot = prod.precio * item.cantidad;
+    total += tot;
+    ganancia += gan;
+    return { id: item.id, nombre: prod.nombre, cantidad: item.cantidad, precio: prod.precio, ganancia: prod.precio - prod.costo };
+  });
+
+  // Bajar stock
+  for (const [id, qty] of Object.entries(agrupado)) {
+    datos.stock[id] = (datos.stock[id] || 0) - qty;
+  }
+
+  // Guardar en historial
+  datos.historial.unshift({
+    tipo: 'cliente',
+    fecha,
+    cliente,
+    items,
+    total,
+    ganancia,
+    id: Date.now()
+  });
+
+  guardarDatos(datos);
+  showAlert('✅ Pedido confirmado!', 'success');
+
+  // Reset
+  document.getElementById('cliente-nombre').value = '';
+  pedidoItems = [{ id: PRODUCTOS[0].id, cantidad: 1 }];
+  renderPedidoItems();
+}
+
+// ============================================================
+// PEDIDO FÁBRICA
+// ============================================================
+let compraItems = [];
+
+function initCompra() {
+  document.getElementById('fabrica-fecha').value = todayISO();
+  if (compraItems.length === 0) agregarItemCompra();
+  else renderCompraItems();
+}
+
+function agregarItemCompra() {
+  compraItems.push({ id: PRODUCTOS[0].id, cantidad: 1 });
+  renderCompraItems();
+}
+
+function renderCompraItems() {
+  const container = document.getElementById('compra-items');
+  container.innerHTML = compraItems.map((item, i) => {
+    const selectOptions = PRODUCTOS.map(p =>
+      `<option value="${p.id}" ${p.id === item.id ? 'selected' : ''}>${p.tipo === 'pizza' ? '🍕' : '🫓'} ${p.nombre} — costo ${formatPeso(p.costo)}</option>`
+    ).join('');
+    return `<div class="compra-item">
+      <select onchange="cambiarProductoCompra(${i}, this.value)">${selectOptions}</select>
+      <input type="number" class="qty-input" value="${item.cantidad}" min="1"
+        onchange="cambiarCantidadCompra(${i}, this.value)">
+      <button class="remove-btn" onclick="eliminarItemCompra(${i})">✕</button>
+    </div>`;
+  }).join('');
+  actualizarTotalCompra();
+}
+
+function cambiarProductoCompra(i, val) {
+  compraItems[i].id = val;
+  actualizarTotalCompra();
+}
+
+function cambiarCantidadCompra(i, val) {
+  compraItems[i].cantidad = Math.max(1, parseInt(val) || 1);
+  actualizarTotalCompra();
+}
+
+function eliminarItemCompra(i) {
+  compraItems.splice(i, 1);
+  if (compraItems.length === 0) compraItems.push({ id: PRODUCTOS[0].id, cantidad: 1 });
+  renderCompraItems();
+}
+
+function actualizarTotalCompra() {
+  let total = 0;
+  compraItems.forEach(item => {
+    const prod = getProducto(item.id);
+    if (prod) total += prod.costo * item.cantidad;
+  });
+  document.getElementById('compra-total').textContent = formatPeso(total);
+}
+
+function confirmarCompra() {
+  const fecha = document.getElementById('fabrica-fecha').value;
+  const nota = document.getElementById('fabrica-nota').value.trim();
+
+  if (!fecha) { showAlert('Ingresá la fecha', 'error'); return; }
+
+  let total = 0;
+  const items = compraItems.map(item => {
+    const prod = getProducto(item.id);
+    const tot = prod.costo * item.cantidad;
+    total += tot;
+    // Actualizar stock
+    datos.stock[item.id] = (datos.stock[item.id] || 0) + item.cantidad;
+    return { id: item.id, nombre: prod.nombre, cantidad: item.cantidad, costo: prod.costo };
+  });
+
+  datos.historial.unshift({
+    tipo: 'fabrica',
+    fecha,
+    nota,
+    items,
+    total,
+    id: Date.now()
+  });
+
+  guardarDatos(datos);
+  showAlert('📦 Compra registrada y stock actualizado!', 'success');
+
+  compraItems = [{ id: PRODUCTOS[0].id, cantidad: 1 }];
+  document.getElementById('fabrica-nota').value = '';
+  renderCompraItems();
+}
+
+// ============================================================
+// HISTORIAL
+// ============================================================
+let filtroHistorial = 'todos';
+
+function filtrarHistorial(filtro, btn) {
+  filtroHistorial = filtro;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderHistorial(filtro);
+}
+
+function renderHistorial(filtro) {
+  const lista = datos.historial.filter(h => filtro === 'todos' || h.tipo === filtro);
+  const container = document.getElementById('historial-lista');
+
+  if (lista.length === 0) {
+    container.innerHTML = `<div class="empty"><div class="empty-icon">📋</div><div class="empty-text">No hay registros todavía</div></div>`;
+    return;
+  }
+
+  container.innerHTML = lista.map(item => {
+    const esCliente = item.tipo === 'cliente';
+    const badge = esCliente
+      ? '<span class="tipo-badge tipo-cliente">CLIENTE</span>'
+      : '<span class="tipo-badge tipo-fabrica">FÁBRICA</span>';
+
+    const productosStr = item.items.map(i => `${i.nombre} x${i.cantidad}`).join(' · ');
+    const totalLabel = esCliente ? formatPeso(item.total) : formatPeso(item.total);
+    const subtitulo = esCliente ? item.cliente : (item.nota || 'Compra a fábrica');
+
+    return `<div class="historial-item">
+      <div class="historial-header">
+        <div>
+          <div class="historial-cliente">${subtitulo} ${badge}</div>
+          <div class="historial-fecha">${formatFecha(item.fecha)}</div>
+        </div>
+        <div class="historial-total">${totalLabel}</div>
+      </div>
+      <div class="historial-productos">${productosStr}</div>
+      ${esCliente ? `<div style="font-size:11px;color:var(--green);margin-top:4px;font-weight:600">Ganancia: ${formatPeso(item.ganancia)}</div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+// ============================================================
+// DATOS HISTÓRICOS PRE-CARGADOS
+// ============================================================
+const HISTORIAL_PRECARGADO = [
+  // FÁBRICA - primer pedido 01/04/2026
+  {
+    id: 1000001, tipo: 'fabrica', fecha: '2026-04-01', nota: 'primer pedido',
+    total: 598250,
+    items: [
+      { id: 'muzz', nombre: 'Muzzarella', cantidad: 10, costo: 6000 },
+      { id: 'fuga', nombre: 'Fugazzetta', cantidad: 5, costo: 6450 },
+      { id: 'jamon', nombre: 'Jamón', cantidad: 10, costo: 6900 },
+      { id: 'panc', nombre: 'Panceta y verdeo', cantidad: 5, costo: 7400 },
+      { id: 'pepp', nombre: 'Pepperoni', cantidad: 5, costo: 8000 },
+      { id: 'carne', nombre: 'Carne', cantidad: 5, costo: 10000 },
+      { id: 'hamq', nombre: 'Jamón y queso', cantidad: 5, costo: 10000 },
+      { id: 'qceb', nombre: 'Queso y cebolla', cantidad: 3, costo: 10000 },
+      { id: 'pollo', nombre: 'Pollo', cantidad: 3, costo: 10000 },
+      { id: 'humi', nombre: 'Humita', cantidad: 3, costo: 10000 },
+      { id: 'verd', nombre: 'Verdura', cantidad: 2, costo: 10000 },
+      { id: 'medi', nombre: 'Mediterránea', cantidad: 5, costo: 10000 },
+      { id: 'roque', nombre: 'Roquefort', cantidad: 2, costo: 10000 },
+      { id: 'bond', nombre: 'Bondiola BBQ', cantidad: 3, costo: 10000 },
+      { id: 'cheese', nombre: 'Cheeseburger', cantidad: 5, costo: 10000 },
+    ]
+  },
+  // CLIENTES ABRIL
+  {
+    id: 1000002, tipo: 'cliente', fecha: '2026-04-24', cliente: 'juan',
+    total: 9000, ganancia: 2100,
+    items: [{ id: 'jamon', nombre: 'Jamón', cantidad: 1, precio: 9000, ganancia: 2100 }]
+  },
+  {
+    id: 1000003, tipo: 'cliente', fecha: '2026-04-24', cliente: 'anto reyes',
+    total: 78000, ganancia: 18000,
+    items: [
+      { id: 'carne', nombre: 'Carne', cantidad: 2, precio: 13000, ganancia: 3000 },
+      { id: 'hamq', nombre: 'Jamón y queso', cantidad: 2, precio: 13000, ganancia: 3000 },
+      { id: 'pollo', nombre: 'Pollo', cantidad: 2, precio: 13000, ganancia: 3000 },
+    ]
+  },
+  {
+    id: 1000004, tipo: 'cliente', fecha: '2026-04-24', cliente: 'santi ciaroni',
+    total: 39000, ganancia: 9000,
+    items: [
+      { id: 'hamq', nombre: 'Jamón y queso', cantidad: 1, precio: 13000, ganancia: 3000 },
+      { id: 'qceb', nombre: 'Queso y cebolla', cantidad: 1, precio: 13000, ganancia: 3000 },
+      { id: 'carne', nombre: 'Carne', cantidad: 1, precio: 13000, ganancia: 3000 },
+    ]
+  },
+  {
+    id: 1000005, tipo: 'cliente', fecha: '2026-04-28', cliente: 'fiera',
+    total: 26000, ganancia: 6000,
+    items: [
+      { id: 'carne', nombre: 'Carne', cantidad: 1, precio: 13000, ganancia: 3000 },
+      { id: 'medi', nombre: 'Mediterránea', cantidad: 1, precio: 13000, ganancia: 3000 },
+    ]
+  },
+  {
+    id: 1000006, tipo: 'cliente', fecha: '2026-04-28', cliente: 'juan',
+    total: 13000, ganancia: 3000,
+    items: [{ id: 'carne', nombre: 'Carne', cantidad: 1, precio: 13000, ganancia: 3000 }]
+  },
+  // CLIENTES MAYO
+  {
+    id: 1000007, tipo: 'cliente', fecha: '2026-05-03', cliente: 'mili',
+    total: 45000, ganancia: 10100,
+    items: [
+      { id: 'medi', nombre: 'Mediterránea', cantidad: 1, precio: 13000, ganancia: 3000 },
+      { id: 'jamon', nombre: 'Jamón', cantidad: 1, precio: 9000, ganancia: 2100 },
+      { id: 'pepp', nombre: 'Pepperoni', cantidad: 1, precio: 10000, ganancia: 2000 },
+      { id: 'cheese', nombre: 'Cheeseburger', cantidad: 1, precio: 13000, ganancia: 3000 },
+    ]
+  },
+  {
+    id: 1000008, tipo: 'cliente', fecha: '2026-05-03', cliente: 'gabi',
+    total: 24500, ganancia: 6050,
+    items: [
+      { id: 'muzz', nombre: 'Muzzarella', cantidad: 2, precio: 8000, ganancia: 2000 },
+      { id: 'fuga', nombre: 'Fugazzetta', cantidad: 1, precio: 8500, ganancia: 2050 },
+    ]
+  },
+  {
+    id: 1000009, tipo: 'cliente', fecha: '2026-05-03', cliente: 'mama',
+    total: 39000, ganancia: 9000,
+    items: [
+      { id: 'pollo', nombre: 'Pollo', cantidad: 1, precio: 13000, ganancia: 3000 },
+      { id: 'medi', nombre: 'Mediterránea', cantidad: 1, precio: 13000, ganancia: 3000 },
+      { id: 'bond', nombre: 'Bondiola BBQ', cantidad: 1, precio: 13000, ganancia: 3000 },
+    ]
+  },
+  {
+    id: 1000010, tipo: 'cliente', fecha: '2026-05-03', cliente: 'teo',
+    total: 13000, ganancia: 3000,
+    items: [{ id: 'bond', nombre: 'Bondiola BBQ', cantidad: 1, precio: 13000, ganancia: 3000 }]
+  },
+  {
+    id: 1000011, tipo: 'cliente', fecha: '2026-05-03', cliente: 'mama',
+    total: 31500, ganancia: 7200,
+    items: [
+      { id: 'panc', nombre: 'Panceta y verdeo', cantidad: 1, precio: 9500, ganancia: 2100 },
+      { id: 'jamon', nombre: 'Jamón', cantidad: 1, precio: 9000, ganancia: 2100 },
+      { id: 'cheese', nombre: 'Cheeseburger', cantidad: 1, precio: 13000, ganancia: 3000 },
+    ]
+  },
+  {
+    id: 1000012, tipo: 'cliente', fecha: '2026-05-05', cliente: 'caro tym',
+    total: 52000, ganancia: 12000,
+    items: [
+      { id: 'hamq', nombre: 'Jamón y queso', cantidad: 2, precio: 13000, ganancia: 3000 },
+      { id: 'cheese', nombre: 'Cheeseburger', cantidad: 1, precio: 13000, ganancia: 3000 },
+      { id: 'bond', nombre: 'Bondiola BBQ', cantidad: 1, precio: 13000, ganancia: 3000 },
+    ]
+  },
+  {
+    id: 1000013, tipo: 'cliente', fecha: '2026-05-05', cliente: 'juan',
+    total: 33000, ganancia: 8100,
+    items: [
+      { id: 'muzz', nombre: 'Muzzarella', cantidad: 2, precio: 8000, ganancia: 2000 },
+      { id: 'fuga', nombre: 'Fugazzetta', cantidad: 2, precio: 8500, ganancia: 2050 },
+    ]
+  },
+  {
+    id: 1000014, tipo: 'cliente', fecha: '2026-05-10', cliente: 'sofi',
+    total: 54000, ganancia: 12150,
+    items: [
+      { id: 'fuga', nombre: 'Fugazzetta', cantidad: 1, precio: 8500, ganancia: 2050 },
+      { id: 'pepp', nombre: 'Pepperoni', cantidad: 1, precio: 10000, ganancia: 2000 },
+      { id: 'panc', nombre: 'Panceta y verdeo', cantidad: 1, precio: 9500, ganancia: 2100 },
+      { id: 'verd', nombre: 'Verdura', cantidad: 1, precio: 13000, ganancia: 3000 },
+      { id: 'qceb', nombre: 'Queso y cebolla', cantidad: 1, precio: 13000, ganancia: 3000 },
+    ]
+  },
+  {
+    id: 1000015, tipo: 'cliente', fecha: '2026-05-11', cliente: 'gabi',
+    total: 8500, ganancia: 2050,
+    items: [{ id: 'fuga', nombre: 'Fugazzetta', cantidad: 1, precio: 8500, ganancia: 2050 }]
+  },
+  {
+    id: 1000016, tipo: 'cliente', fecha: '2026-05-11', cliente: 'mili',
+    total: 13000, ganancia: 3000,
+    items: [{ id: 'verd', nombre: 'Verdura', cantidad: 1, precio: 13000, ganancia: 3000 }]
+  },
+  // FÁBRICA - compra 19/05/2026
+  {
+    id: 1000017, tipo: 'fabrica', fecha: '2026-05-19', nota: 'Compra a fábrica',
+    total: 319350,
+    items: [
+      { id: 'carne', nombre: 'Carne', cantidad: 8, costo: 10000 },
+      { id: 'hamq', nombre: 'Jamón y queso', cantidad: 6, costo: 10000 },
+      { id: 'bond', nombre: 'Bondiola BBQ', cantidad: 5, costo: 10000 },
+      { id: 'fuga', nombre: 'Fugazzetta', cantidad: 3, costo: 6450 },
+      { id: 'verd', nombre: 'Verdura', cantidad: 3, costo: 10000 },
+      { id: 'pollo', nombre: 'Pollo', cantidad: 6, costo: 10000 },
+      { id: 'cheese', nombre: 'Cheeseburger', cantidad: 1, costo: 10000 },
+      { id: 'qceb', nombre: 'Queso y cebolla', cantidad: 1, costo: 10000 },
+    ]
+  },
+  // CLIENTE - caro tym 19/05/2026
+  {
+    id: 1000018, tipo: 'cliente', fecha: '2026-05-19', cliente: 'caro tym',
+    total: 39000, ganancia: 9000,
+    items: [
+      { id: 'carne', nombre: 'Carne', cantidad: 1, precio: 13000, ganancia: 3000 },
+      { id: 'cheese', nombre: 'Cheeseburger', cantidad: 2, precio: 13000, ganancia: 3000 },
+    ]
+  },
+];
+
+function cargarHistorialPrecargado() {
+  // Solo cargar si no fue cargado antes
+  if (datos.precargado_v1) return;
+  const idsExistentes = new Set(datos.historial.map(h => h.id));
+  HISTORIAL_PRECARGADO.forEach(item => {
+    if (!idsExistentes.has(item.id)) {
+      datos.historial.push(item);
+    }
+  });
+  // Ordenar por fecha desc
+  datos.historial.sort((a, b) => (b.fecha || '').localeCompare(a.fecha || ''));
+  guardarDatos(datos);
+  localStorage.setItem('tgo_precargado_v1', '1');
+}
+
+// ============================================================
+// INIT
+// ============================================================
+// Datos reales precargados directamente
+const DATOS_REALES = {
+  stock: {"muzz":6,"fuga":3,"jamon":7,"panc":3,"pepp":3,"carne":7,"hamq":6,"qceb":2,"pollo":6,"humi":3,"verd":3,"medi":2,"roque":2,"bond":5,"cheese":1},
+  historial: [{"id":1000017,"tipo":"fabrica","fecha":"2026-05-19","nota":"Compra a fábrica","total":319350,"items":[{"id":"carne","nombre":"Carne","cantidad":8,"costo":10000},{"id":"hamq","nombre":"Jamón y queso","cantidad":6,"costo":10000},{"id":"bond","nombre":"Bondiola BBQ","cantidad":5,"costo":10000},{"id":"fuga","nombre":"Fugazzetta","cantidad":3,"costo":6450},{"id":"verd","nombre":"Verdura","cantidad":3,"costo":10000},{"id":"pollo","nombre":"Pollo","cantidad":6,"costo":10000},{"id":"cheese","nombre":"Cheeseburger","cantidad":1,"costo":10000},{"id":"qceb","nombre":"Queso y cebolla","cantidad":1,"costo":10000}]},{"id":1000018,"tipo":"cliente","fecha":"2026-05-19","cliente":"caro tym","total":39000,"ganancia":9000,"items":[{"id":"carne","nombre":"Carne","cantidad":1,"precio":13000,"ganancia":3000},{"id":"cheese","nombre":"Cheeseburger","cantidad":2,"precio":13000,"ganancia":3000}]},{"id":1000015,"tipo":"cliente","fecha":"2026-05-11","cliente":"gabi","total":8500,"ganancia":2050,"items":[{"id":"fuga","nombre":"Fugazzetta","cantidad":1,"precio":8500,"ganancia":2050}]},{"id":1000016,"tipo":"cliente","fecha":"2026-05-11","cliente":"mili","total":13000,"ganancia":3000,"items":[{"id":"verd","nombre":"Verdura","cantidad":1,"precio":13000,"ganancia":3000}]},{"id":1000014,"tipo":"cliente","fecha":"2026-05-10","cliente":"sofi","total":54000,"ganancia":12150,"items":[{"id":"fuga","nombre":"Fugazzetta","cantidad":1,"precio":8500,"ganancia":2050},{"id":"pepp","nombre":"Pepperoni","cantidad":1,"precio":10000,"ganancia":2000},{"id":"panc","nombre":"Panceta y verdeo","cantidad":1,"precio":9500,"ganancia":2100},{"id":"verd","nombre":"Verdura","cantidad":1,"precio":13000,"ganancia":3000},{"id":"qceb","nombre":"Queso y cebolla","cantidad":1,"precio":13000,"ganancia":3000}]},{"id":1000012,"tipo":"cliente","fecha":"2026-05-05","cliente":"caro tym","total":52000,"ganancia":12000,"items":[{"id":"hamq","nombre":"Jamón y queso","cantidad":2,"precio":13000,"ganancia":3000},{"id":"cheese","nombre":"Cheeseburger","cantidad":1,"precio":13000,"ganancia":3000},{"id":"bond","nombre":"Bondiola BBQ","cantidad":1,"precio":13000,"ganancia":3000}]},{"id":1000013,"tipo":"cliente","fecha":"2026-05-05","cliente":"juan","total":33000,"ganancia":8100,"items":[{"id":"muzz","nombre":"Muzzarella","cantidad":2,"precio":8000,"ganancia":2000},{"id":"fuga","nombre":"Fugazzetta","cantidad":2,"precio":8500,"ganancia":2050}]},{"id":1000007,"tipo":"cliente","fecha":"2026-05-03","cliente":"mili","total":45000,"ganancia":10100,"items":[{"id":"medi","nombre":"Mediterránea","cantidad":1,"precio":13000,"ganancia":3000},{"id":"jamon","nombre":"Jamón","cantidad":1,"precio":9000,"ganancia":2100},{"id":"pepp","nombre":"Pepperoni","cantidad":1,"precio":10000,"ganancia":2000},{"id":"cheese","nombre":"Cheeseburger","cantidad":1,"precio":13000,"ganancia":3000}]},{"id":1000008,"tipo":"cliente","fecha":"2026-05-03","cliente":"gabi","total":24500,"ganancia":6050,"items":[{"id":"muzz","nombre":"Muzzarella","cantidad":2,"precio":8000,"ganancia":2000},{"id":"fuga","nombre":"Fugazzetta","cantidad":1,"precio":8500,"ganancia":2050}]},{"id":1000009,"tipo":"cliente","fecha":"2026-05-03","cliente":"mama","total":39000,"ganancia":9000,"items":[{"id":"pollo","nombre":"Pollo","cantidad":1,"precio":13000,"ganancia":3000},{"id":"medi","nombre":"Mediterránea","cantidad":1,"precio":13000,"ganancia":3000},{"id":"bond","nombre":"Bondiola BBQ","cantidad":1,"precio":13000,"ganancia":3000}]},{"id":1000010,"tipo":"cliente","fecha":"2026-05-03","cliente":"teo","total":13000,"ganancia":3000,"items":[{"id":"bond","nombre":"Bondiola BBQ","cantidad":1,"precio":13000,"ganancia":3000}]},{"id":1000011,"tipo":"cliente","fecha":"2026-05-03","cliente":"mama","total":31500,"ganancia":7200,"items":[{"id":"panc","nombre":"Panceta y verdeo","cantidad":1,"precio":9500,"ganancia":2100},{"id":"jamon","nombre":"Jamón","cantidad":1,"precio":9000,"ganancia":2100},{"id":"cheese","nombre":"Cheeseburger","cantidad":1,"precio":13000,"ganancia":3000}]},{"id":1000005,"tipo":"cliente","fecha":"2026-04-28","cliente":"fiera","total":26000,"ganancia":6000,"items":[{"id":"carne","nombre":"Carne","cantidad":1,"precio":13000,"ganancia":3000},{"id":"medi","nombre":"Mediterránea","cantidad":1,"precio":13000,"ganancia":3000}]},{"id":1000006,"tipo":"cliente","fecha":"2026-04-28","cliente":"juan","total":13000,"ganancia":3000,"items":[{"id":"carne","nombre":"Carne","cantidad":1,"precio":13000,"ganancia":3000}]},{"id":1000002,"tipo":"cliente","fecha":"2026-04-24","cliente":"juan","total":9000,"ganancia":2100,"items":[{"id":"jamon","nombre":"Jamón","cantidad":1,"precio":9000,"ganancia":2100}]},{"id":1000003,"tipo":"cliente","fecha":"2026-04-24","cliente":"anto reyes","total":78000,"ganancia":18000,"items":[{"id":"carne","nombre":"Carne","cantidad":2,"precio":13000,"ganancia":3000},{"id":"hamq","nombre":"Jamón y queso","cantidad":2,"precio":13000,"ganancia":3000},{"id":"pollo","nombre":"Pollo","cantidad":2,"precio":13000,"ganancia":3000}]},{"id":1000004,"tipo":"cliente","fecha":"2026-04-24","cliente":"santi ciaroni","total":39000,"ganancia":9000,"items":[{"id":"hamq","nombre":"Jamón y queso","cantidad":1,"precio":13000,"ganancia":3000},{"id":"qceb","nombre":"Queso y cebolla","cantidad":1,"precio":13000,"ganancia":3000},{"id":"carne","nombre":"Carne","cantidad":1,"precio":13000,"ganancia":3000}]},{"id":1000001,"tipo":"fabrica","fecha":"2026-04-01","nota":"primer pedido","total":598250,"items":[{"id":"muzz","nombre":"Muzzarella","cantidad":10,"costo":6000},{"id":"fuga","nombre":"Fugazzetta","cantidad":5,"costo":6450},{"id":"jamon","nombre":"Jamón","cantidad":10,"costo":6900},{"id":"panc","nombre":"Panceta y verdeo","cantidad":5,"costo":7400},{"id":"pepp","nombre":"Pepperoni","cantidad":5,"costo":8000},{"id":"carne","nombre":"Carne","cantidad":5,"costo":10000},{"id":"hamq","nombre":"Jamón y queso","cantidad":5,"costo":10000},{"id":"qceb","nombre":"Queso y cebolla","cantidad":3,"costo":10000},{"id":"pollo","nombre":"Pollo","cantidad":3,"costo":10000},{"id":"humi","nombre":"Humita","cantidad":3,"costo":10000},{"id":"verd","nombre":"Verdura","cantidad":2,"costo":10000},{"id":"medi","nombre":"Mediterránea","cantidad":5,"costo":10000},{"id":"roque","nombre":"Roquefort","cantidad":2,"costo":10000},{"id":"bond","nombre":"Bondiola BBQ","cantidad":3,"costo":10000},{"id":"cheese","nombre":"Cheeseburger","cantidad":5,"costo":10000}]}],
+  precargado_v1: true
+};
+
+async function cargarDatosCloud() {
+  mostrarCargando(true);
+  try {
+    const res = await fetch(API_URL);
+    const text = await res.text();
+    if (text && text !== '{}' && text.trim() !== '' && text.trim() !== 'undefined') {
+      try {
+        const parsed = JSON.parse(text);
+        if (parsed && parsed.historial && parsed.historial.length > 0) {
+          datos.stock = parsed.stock;
+          datos.historial = parsed.historial;
+        } else {
+          // Nube vacía, subir datos reales
+          datos = { ...DATOS_REALES };
+          await subirDatosANube(datos);
+        }
+      } catch(e) {
+        datos = { ...DATOS_REALES };
+        await subirDatosANube(datos);
+      }
+    } else {
+      datos = { ...DATOS_REALES };
+      await subirDatosANube(datos);
+    }
+  } catch(e) {
+    // Sin internet, usar datos locales
+    datos = { ...DATOS_REALES };
+    showAlert('Sin conexión — mostrando datos locales', 'error');
+  }
+  mostrarCargando(false);
+  renderDashboard();
+}
+
+async function subirDatosANube(data) {
+  try {
+    await fetch(API_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      body: JSON.stringify(data),
+      headers: { 'Content-Type': 'application/json' }
+    });
+  } catch(e) {}
+}
+
+cargarDatosCloud();
+</script>
+</body>
+</html>
